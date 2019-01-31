@@ -43,7 +43,8 @@ vec2 randvec2(vec2 n, vec2 seed) {
 }
 
 float quinticSmooth(float t) {
-  return t * t * t * (t * (t * 6.0  - 15.0) + 10.0);
+  float x = clamp(t, 0.0, 1.0);
+  return x * x * x * (x * (x * 6.0  - 15.0) + 10.0);
 }
 
 float perlinNoise(float x, float z) {
@@ -100,38 +101,41 @@ float perlinNoise(float x, float z) {
 float interpRand(float x, float z) {
   vec2 seed = vec2(0.0, 0.0);
 
-    float intX = floor(x);
-    float fractX = fract(x);
-    float intZ = floor(z);
-    float fractZ = fract(z);
+  float intX = floor(x);
+  float fractX = fract(x);
+  float intZ = floor(z);
+  float fractZ = fract(z);
 
-    vec2 c1 = vec2(intX, intZ);
-    vec2 c2 = vec2(intX + 1.0, intZ);
-    vec2 c3 = vec2(intX, intZ + 1.0);
-    vec2 c4 = vec2(intX + 1.0, intZ + 1.0);
+  vec2 c1 = vec2(intX, intZ);
+  vec2 c2 = vec2(intX + 1.0, intZ);
+  vec2 c3 = vec2(intX, intZ + 1.0);
+  vec2 c4 = vec2(intX + 1.0, intZ + 1.0);
 
-    float v1 = random1(c1, seed);
-    float v2 = random1(c2, seed);
-    float v3 = random1(c3, seed);
-    float v4 = random1(c4, seed);
+  float v1 = random1(c1, seed);
+  float v2 = random1(c2, seed);
+  float v3 = random1(c3, seed);
+  float v4 = random1(c4, seed);
 
-    float i1 = mix(v1, v2, quinticSmooth(fractX));
-    float i2 = mix(v3, v4, quinticSmooth(fractX));
-    return mix(i1, i2, quinticSmooth(fractZ));
+  float i1 = mix(v1, v2, quinticSmooth(fractX));
+  float i2 = mix(v3, v4, quinticSmooth(fractX));
+  return mix(i1, i2, quinticSmooth(fractZ));
 }
 
-float fbmHeight(float x, float z, int biome) {
+float fbmHeight(float x, float z, float biome) {
   float total = 0.0;
-  float persistence = 0.25f;
   int octaves = 8;
 
   for (int i = 0; i < octaves; i++) {
-    float freq = pow(2.0, float(i));
-    float amp = pow(persistence, float(i));
-    if (biome == 0) {
+    if (biome == 0.0) {
+      float persistence = 0.5f;
+      float freq = pow(2.0, float(i));
+      float amp = pow(persistence, float(i));
+      total += interpRand(x / 10.0 * freq, z / 10.0 * freq) * amp;
+    } else if (biome == 1.0) {
+      float persistence = 0.25f;
+      float freq = pow(2.0, float(i));
+      float amp = pow(persistence, float(i));
       total += perlinNoise(x * freq, z * freq) * amp;
-    } else if (biome == 1) {
-      total += interpRand(x * freq, z * freq) * amp;
     }
   }
   return total;
@@ -143,7 +147,7 @@ vec2 tempAndRainfall(vec2 pos) {
 
     int x = int(floor(pos.x / factor));
     int y = int(floor(pos.y / factor));
-    vec2 minWorley = factor * randvec2(pos, seed) + vec2(float(x) * factor, float(y) * factor);
+    vec2 minWorley = factor * randvec2(vec2(float(x), float(y)), seed) + vec2(float(x) * factor, float(y) * factor);
     float minDist = distance(minWorley, pos);
     for (int i = x - 1; i <= x + 1; i++) {
         for (int j = y - 1; j <= y + 1; j++) {
@@ -157,8 +161,6 @@ vec2 tempAndRainfall(vec2 pos) {
     return random2(minWorley, seed);
 }
 
-
-
 void main()
 {
   fs_Pos = vs_Pos.xyz;
@@ -171,10 +173,10 @@ void main()
   float rainBoundary = 0.5;
   if (biomeAttr.y < rainBoundary) {
     fs_Biome = 0.0;
-    fs_Height = fbmHeight(x, z, int(fs_Biome)) * 2.0;
+    fs_Height = fbmHeight(x, z, fs_Biome);
   } else {
     fs_Biome = 1.0;
-    fs_Height = fbmHeight(x, z, int(fs_Biome)) * 4.0;
+    fs_Height = fbmHeight(x, z, fs_Biome) * 4.0;
   }
   vec4 modelposition = vec4(vs_Pos.x, fs_Height, vs_Pos.z, 1.0);
   modelposition = u_Model * modelposition;
