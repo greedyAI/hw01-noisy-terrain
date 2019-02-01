@@ -1,6 +1,6 @@
 # CIS 566 Homework 1: Noisy Terrain
 Wei (Waley) Zhang (PennKey: wzha)
-![](img/screenshot.png)
+![](img/screenshot.PNG)
 [github.io Demo]()
 
 ## Features
