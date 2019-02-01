@@ -13,6 +13,9 @@ import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 const controls = {
   tesselations: 5,
   'Load Scene': loadScene, // A function pointer, essentially
+  biomeSize: 128.0,
+  meanTemperature: 0.5,
+  meanRainfall: 0.5
 };
 
 let square: Square;
@@ -82,6 +85,9 @@ function main() {
 
   // Add controls to the gui
   const gui = new DAT.GUI();
+  gui.add(controls, 'biomeSize', 16.0, 256.0);
+  gui.add(controls, 'meanTemperature', 0.0, 1.0);
+  gui.add(controls, 'meanRainfall', 0.0, 1.0);
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -139,6 +145,9 @@ function main() {
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
     processKeyPresses();
+    lambert.setBiomeSize(controls.biomeSize);
+    lambert.setAvgTemp(controls.meanTemperature);
+    lambert.setAvgRain(controls.meanRainfall);
     renderer.render(camera, lambert, [
       plane,
     ]);

@@ -30,6 +30,9 @@ class ShaderProgram {
   unifViewProj: WebGLUniformLocation;
   unifColor: WebGLUniformLocation;
   unifPlanePos: WebGLUniformLocation;
+  unifBiomeSize: WebGLUniformLocation;
+  unifAvgTemp: WebGLUniformLocation;
+  unifAvgRain: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -49,6 +52,9 @@ class ShaderProgram {
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
     this.unifPlanePos   = gl.getUniformLocation(this.prog, "u_PlanePos");
+    this.unifBiomeSize  = gl.getUniformLocation(this.prog, "u_BiomeSize");
+    this.unifAvgTemp  = gl.getUniformLocation(this.prog, "u_AvgTemp");
+    this.unifAvgRain  = gl.getUniformLocation(this.prog, "u_AvgRain");
   }
 
   use() {
@@ -83,6 +89,27 @@ class ShaderProgram {
     this.use();
     if (this.unifPlanePos !== -1) {
       gl.uniform2fv(this.unifPlanePos, pos);
+    }
+  }
+
+  setBiomeSize(radius: number) {
+    this.use();
+    if (this.unifBiomeSize !== -1) {
+      gl.uniform1f(this.unifBiomeSize, radius);
+    }
+  }
+
+  setAvgTemp(temp: number) {
+    this.use();
+    if (this.unifAvgTemp !== -1) {
+      gl.uniform1f(this.unifAvgTemp, temp);
+    }
+  }
+
+  setAvgRain(rain: number) {
+    this.use();
+    if (this.unifAvgRain !== -1) {
+      gl.uniform1f(this.unifAvgRain, rain);
     }
   }
 
