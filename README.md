@@ -1,7 +1,7 @@
 # CIS 566 Homework 1: Noisy Terrain
 _Wei (Waley) Zhang (PennKey: wzha)_
 ![](img/screenshot.PNG)
-[github.io Demo](https://greedyai.github.io/hw01-noisy-terrain/)
+[github.io Demo](https://greedyai.github.io/noisy-terrain/)
 
 ## Features
 - __Four biomes.__ My world contains the following biomes:
