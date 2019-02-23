@@ -1,5 +1,6 @@
 # Noisy Terrain
 _Created for CIS 566 Homework 1 in Spring 2019_
+
 _Wei (Waley) Zhang (PennKey: wzha)_
 ![](img/screenshot.PNG)
 [github.io Demo](https://greedyai.github.io/noisy-terrain/)
